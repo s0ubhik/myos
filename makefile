@@ -45,4 +45,4 @@ run: all
 	qemu-system-i386 -kernel $(out)
 
 clean:
-	rm -rf boot/*.o kernel/*.o driver/*.o cpu/*.o build
+	rm -rf boot/*.o kernel/*.o driver/*.o cpu/*.o build libc/*.o
