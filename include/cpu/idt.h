@@ -96,4 +96,6 @@ typedef struct {
 
 typedef void (*isr_t)(registers_t);
 void register_interrupt_handler(u8int n, isr_t handler);
+void irq_ack(u8int int_no);
+
 #endif

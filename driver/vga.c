@@ -1,6 +1,9 @@
 #include "driver/vga.h"
 #include "cpu/ports.h"
 
+#define PORT_SCREEN_CTRL 0x3d4
+#define PORT_SCREEN_DATA 0x3d5
+
 u8int color = 0x0F;
 
 void clear_screen() {
@@ -50,6 +53,24 @@ void printk(char* str) {
     }
 
     set_cursor_offset(offset);
+}
+
+void print_int(u32int n){
+  char s[13];
+  int_to_ascii(n, s);
+  printk(s);
+}
+
+void print_bin(u32int n){
+  char s[33];
+  int_to_bin(n, s);
+  printk(s);
+}
+
+void print_hex(u32int n){
+  char s[13];
+  int_to_hex(n, s);
+  printk(s);
 }
 
 void printkc(char *str, u8int _color) {

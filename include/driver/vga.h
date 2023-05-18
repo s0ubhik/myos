@@ -13,6 +13,10 @@ u16int vga_scroll();
 void printk(char* str);
 void printkc(char *str, u8int _color);
 
+void print_int(u32int n);
+void print_bin(u32int n);
+void print_hex(u32int n);
+
 u16int get_cursor_offset();
 
 void set_cursor_offset(u16int offset); 
@@ -20,4 +24,5 @@ void set_cursor_offset(u16int offset);
 static u16int cal_offset(u16int row, u16int col);
 static u16int cal_row(u16int offset);
 static u16int cal_col(u16int offset);
+
 #endif

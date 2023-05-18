@@ -16,12 +16,29 @@ SRC += $(wildcard libc/*.c)
 
 OBJS = boot/loader.o cpu/inturrpts.o
 OBJS += $(SRC:.c=.o)
-out = build/myos
+out = build/myos.iso
+boot = build/iso/boot
+grub = $(boot)/grub
+cfg = $(grub)/grub.cfg
+bin = $(boot)/myos.bin
 
 all: build $(out)
 	@echo $(out) is ready
 
-$(out): linker.ld $(OBJS)
+$(out): $(bin) 
+	@mkdir -p $(grub)
+	@echo "  ISO $@"
+	@echo 'set timeout=0' > $(cfg)
+	@echo 'set default=0' >> $(cfg)
+	@echo '' >> $(cfg)
+	@echo 'menuentry "myos" {' >> $(cfg)
+	@echo '  multiboot /boot/myos.bin' >> $(cfg)
+	@echo '  boot' >> $(cfg)
+	@echo '}' >> $(cfg)
+	@grub-mkrescue --output=$@ build/iso >/dev/null 2>&1
+
+$(bin): linker.ld $(OBJS)
+	@mkdir -p $(boot)
 	@$(LD) $(LDPARAMS) -T $< -o $@ $(OBJS)
 	@echo "  LD $<"
 
@@ -41,8 +58,13 @@ build:
 
 .PHONY: clean run
 
-run: all
-	qemu-system-i386 -kernel $(out)
+run-vm: all
+	@(killall VirtualBoxVM && sleep 1) || true
+	@vboxmanage startvm myos &
+
+run-qemu: all
+	@qemu-system-i386 -kernel $(bin)
 
 clean:
-	rm -rf boot/*.o kernel/*.o driver/*.o cpu/*.o build libc/*.o
+	@rm -rf boot/*.o kernel/*.o driver/*.o cpu/*.o libc/*.o build
+

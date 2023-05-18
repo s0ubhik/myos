@@ -156,13 +156,13 @@ typedef enum KEYCODE {
 	KEY_UNKNOWN
 } key_code;
 
-typedef void (*keyboard_hook_t)(key_code key);
-
 void init_keyboard();
 
 void generic_keyboard_hook(key_code key);
 
 char* input();
 
+typedef void (*keyboard_hook_t)(key_code key);
 void set_keyboard_hook(keyboard_hook_t _keyboardhook);
+
 #endif

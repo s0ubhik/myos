@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "gdt.h": "c",
+        "mouse.h": "c",
+        "timer.h": "c",
+        "vga.h": "c",
+        "string.h": "c",
+        "pci.h": "c",
+        "ata.h": "c",
+        "kernel.h": "c",
+        "stdio.h": "c",
+        "stdint.h": "c"
+    }
+}

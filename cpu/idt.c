@@ -150,18 +150,24 @@ void register_interrupt_handler(u8int n, isr_t handler) {
     interrupt_handlers[n] = handler;
 }
 
-void irq_handler(registers_t r) {
-    if (r.int_no >= 40) port_outb(0xA0, 0x20); /* for slave */
+void irq_ack(u8int int_no){
+    if (int_no >= 40) port_outb(0xA0, 0x20); /* for slave */
     port_outb(0x20, 0x20); /* for master */
+}
 
+void irq_handler(registers_t r) {
+    // if (r.int_no != 32) {
+    //     char a[5];
+    //     int_to_ascii(r.int_no, a);
+    //     printk("INT ");
+    //     printk(a);
+    //     printk("\n");        
+    // }
+
+    irq_ack(r.int_no);
     if (interrupt_handlers[r.int_no] != 0) {
         isr_t handler = interrupt_handlers[r.int_no];
+        if (r.int_no > 32) r.int_no -= 32; /* actual IRQ inttupt no */
         handler(r);
-        // if (r.int_no == 32) return;
-        // char a[5];
-        // int_to_ascii(r.int_no, a);
-        // printk("INT ");
-        // printk(a);
-        // printk("\n");
     }
 }
