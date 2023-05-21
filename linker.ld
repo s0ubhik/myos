@@ -2,30 +2,30 @@ ENTRY(loader)
 OUTPUT_FORMAT(elf32-i386)
 OUTPUT_ARCH(i386:i386)
 
-SECTIONS
-{
-    . = 0x0100000;
+ENTRY(loader)                /* the name of the entry label */
 
-    .text :
+SECTIONS {
+    . = 0x00100000;          /* the code should be loaded at 1 MB */
+
+    .text ALIGN (0x1000) :   /* align at 4 KB */
     {
         *(.multiboot)
-        *(.text*)
-        *(.rodata)
+        *(.text)             /* all text sections from all files */
     }
 
-    .data :
+    .rodata ALIGN (0x1000) : /* align at 4 KB */
     {
-        *(.data)
+        *(.rodata*)          /* all read-only data sections from all files */
     }
 
-    .bss :
+    .data ALIGN (0x1000) :   /* align at 4 KB */
     {
-        *(.bss)
+        *(.data)             /* all data sections from all files */
     }
 
-    /DISCARD/ :
+    .bss ALIGN (0x1000) :    /* align at 4 KB */
     {
-        *(.comment)
+        *(COMMON)            /* all COMMON sections from all files */
+        *(.bss)              /* all bss sections from all files */
     }
-
 }

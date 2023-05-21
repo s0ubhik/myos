@@ -9,6 +9,8 @@
         "ata.h": "c",
         "kernel.h": "c",
         "stdio.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "keyboard.h": "c",
+        "types.h": "c"
     }
 }

@@ -144,6 +144,7 @@ void isr_handler(registers_t reg){
     printk("\n");
     printk(exception_messages[reg.int_no]);
     printk("\n");
+    while(1);
 }
 
 void register_interrupt_handler(u8int n, isr_t handler) {

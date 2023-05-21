@@ -67,11 +67,6 @@ void print_bin(u32int n){
   printk(s);
 }
 
-void print_hex(u32int n){
-  char s[13];
-  int_to_hex(n, s);
-  printk(s);
-}
 
 void printkc(char *str, u8int _color) {
     u8int oldcol = color;

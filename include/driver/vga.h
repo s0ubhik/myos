@@ -15,7 +15,7 @@ void printkc(char *str, u8int _color);
 
 void print_int(u32int n);
 void print_bin(u32int n);
-void print_hex(u32int n);
+void print_hex(u32int n, u8int c);
 
 u16int get_cursor_offset();
 

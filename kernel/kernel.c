@@ -8,8 +8,17 @@
 #include "driver/ata.h"
 #include "driver/pci.h"
 
-void kernel_main(){
+void aa(){
+    printkc("H OH O H", 0xb);
+}
+
+
+void kernel_main(unsigned long kernel_stack){
     clear_screen();
+
+    printk("Kernel Stack: 0x");
+    print_hex(&kernel_stack+1, 7);
+    printk("\n");
 
     printk("Hello World\n");
 
@@ -34,7 +43,31 @@ void kernel_main(){
 
     printk("Intialising PCI...\n");
     init_pci();
+    
 
+    printk("-------------------------------\n");
+
+    unsigned char* m = (unsigned char*) &aa;
+    unsigned char* b = (unsigned char*) 0x600000;
+
+    for (int i=0; i < 45; i++){
+        print_hex(m[i], 2);
+        b[i] = m[i];
+        printk(" ");
+    }
+    printk("\n");
+    for (int i=0; i < 45; i++){
+        print_hex(b[i], 2);
+        printk(" ");
+    }
+    printk("\n");
+
+void (*func_ptr)(void) = (void (*)(void))0x600000;
+func_ptr();
+
+    printk("\n-------------------------------");
+
+    while(1);
     u8int shell_exit = start_shell();
     printk("Shell Exited with code ");
     char code[3];

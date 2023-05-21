@@ -1,5 +1,5 @@
 #include "libc/string.h"
-#include "types.h"
+
 void int_to_ascii(int n, char str[]) {
     int i, sign;
     if ((sign = n) < 0) n = -n;
@@ -29,6 +29,22 @@ unsigned int strlen(char s[]){
     return i;
 }
 
+void strcat(char str1[], char* str2){
+    unsigned int i = 0;
+    unsigned int cur = strlen(str1);
+    unsigned int m = strlen(str2);
+
+    while(str2[i] != '\0'){
+        str1[cur+i] = str2[i];
+        i++;
+    }
+    str1[cur+i] = '\0';
+}
+
+void strend(char str[]){
+    str[strlen(str)] = '\0';
+}
+
 void str_reverse(char s[]){
     char c;
     unsigned int i, j, max;
@@ -37,18 +53,28 @@ void str_reverse(char s[]){
         c = s[i];
         s[i] = s[j];
         s[j] = c;
+ 
     }
 }
+void print_hex(u32int n, u8int c){
+  char s[c];
+  int_to_hex(n, s, c);
+  printk(s);
+}
 
-void int_to_hex(unsigned long num, char str[])
+void int_to_hex(unsigned long num, char str[], u8int c)
 {
     int i = 0;
+
+    for (u8int m =0; m < c; m++)
+        str[m] = '0';
+    
     while( num > 0) {
         str[i++] = "0123456789ABCDEF"[num % 16];
         num = num/16;
     };
 
-    str[i] = '\0';
+    str[c] = '\0';
     str_reverse(str);
 }
 
