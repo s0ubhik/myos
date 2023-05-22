@@ -13,8 +13,9 @@ SRC = $(wildcard kernel/*.c)
 SRC += $(wildcard driver/*.c)
 SRC += $(wildcard cpu/*.c)
 SRC += $(wildcard libc/*.c)
+SRC += $(wildcard mem/*.c)
 
-OBJS = boot/loader.o cpu/inturrpts.o kernel/hello.o
+OBJS = boot/loader.o cpu/inturrpts.o
 OBJS += $(SRC:.c=.o)
 out = build/myos.iso
 boot = build/iso/boot
@@ -22,11 +23,10 @@ grub = $(boot)/grub
 cfg = $(grub)/grub.cfg
 bin = $(boot)/myos.bin
 
-all: build $(out)
+all: build $(out) clean_o
 	@echo $(out) is ready
-	objdump -D build/iso/boot/myos.bin > debug
 
-$(out): $(bin) 
+$(out): $(bin)
 	@mkdir -p $(grub)
 	@echo "  ISO \033[32;1m$@\033[0m"
 	@echo 'set timeout=0' > $(cfg)
@@ -69,6 +69,8 @@ run-vm: clean all
 run-qemu: all
 	@qemu-system-i386 -kernel $(bin)
 
-clean:
-	@rm -rf boot/*.o kernel/*.o driver/*.o cpu/*.o libc/*.o build
+clean: clean_o
+	@rm -rf build
 
+clean_o:
+	@rm -rf boot/*.o kernel/*.o driver/*.o cpu/*.o libc/*.o mem/*.o
