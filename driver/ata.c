@@ -165,9 +165,9 @@ void init_ata(){
     ata_dev master = ata_detect(0x1F0, 1, "myos");
     ata_dev slave  = ata_detect(0x1F0, 0, "myos");
 
-    u8int buff[15] = "SOUBHIK BISWAS";
-    ata_write(slave, 5, buff, 14);
-    ata_flush(slave);
+    // u8int buff[15] = "This is file";
+    // ata_write(slave, 5, buff, 14);
+    // ata_flush(slave);
 
     u8int read[15];
     read[14] = '\0';

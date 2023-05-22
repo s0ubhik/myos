@@ -23,7 +23,7 @@ grub = $(boot)/grub
 cfg = $(grub)/grub.cfg
 bin = $(boot)/myos.bin
 
-all: build $(out) clean_o
+all: build $(out)
 	@echo $(out) is ready
 
 $(out): $(bin)
@@ -60,9 +60,10 @@ $(bin): linker.ld $(OBJS)
 build:
 	@mkdir -vp build
 
-.PHONY: clean run
+.PHONY: clean clean_o run
 
 run-vm: clean all
+	@rm -rf boot/*.o kernel/*.o driver/*.o cpu/*.o libc/*.o mem/*.o
 	@(killall VirtualBoxVM && sleep 1) || true
 	@vboxmanage startvm myos &
 
@@ -70,7 +71,4 @@ run-qemu: all
 	@qemu-system-i386 -kernel $(bin)
 
 clean: clean_o
-	@rm -rf build
-
-clean_o:
-	@rm -rf boot/*.o kernel/*.o driver/*.o cpu/*.o libc/*.o mem/*.o
+	@rm -rf build boot/*.o kernel/*.o driver/*.o cpu/*.o libc/*.o mem/*.o
