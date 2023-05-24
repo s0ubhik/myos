@@ -65,6 +65,7 @@ extern void irq12();
 extern void irq13();
 extern void irq14();
 extern void irq15();
+extern void irq16();
 
 #define IRQ0 32
 #define IRQ1 33
@@ -86,6 +87,7 @@ extern void irq15();
 void isr_handler();
 void iqr_handler();
 
+
 /* Struct which aggregates many registers */
 typedef struct {
    u32int ds; /* Data segment selector */
@@ -97,5 +99,6 @@ typedef struct {
 typedef void (*isr_t)(registers_t);
 void register_interrupt_handler(u8int n, isr_t handler);
 void irq_ack(u8int int_no);
+void idt_init();
 
 #endif

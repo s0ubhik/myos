@@ -2,7 +2,8 @@
 #include "cpu/ports.h"
 #include "driver/vga.h"
 #include "cpu/idt.h"
-#include "libc/string.h"
+#include <string.h>
+
 #define SC_MAX 57
 
 char inp[256];

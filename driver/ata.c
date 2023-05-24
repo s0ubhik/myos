@@ -1,7 +1,7 @@
 #include "driver/ata.h"
 #include "driver/vga.h"
 #include "cpu/ports.h"
-#include "libc/string.h"
+#include <string.h>
 
 /*
 data_port        = base

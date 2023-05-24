@@ -1,21 +1,77 @@
 #include "cpu/idt.h"
+#include "cpu/gdt.h"
 #include "cpu/ports.h"
-#include "libc/mem.h"
-#include "libc/string.h"
+#include <mem.h>
+#include <string.h>
 #include "driver/vga.h"
 
-struct idt_entry_struct idt_entries[256];
+struct idt_entry_struct idt[256];
 struct idt_ptr_struct idt_ptr;
 isr_t interrupt_handlers[256];
 
-static void flush_idt();
-static void idt_set_gate(u8int num, u32int base, u16int sel, u8int flags);
+extern void syscall_handle();
 
-void init_idt() {
-    idt_ptr.limit = sizeof(idt_entries) - 1;
-    idt_ptr.base = (u32int) &idt_entries;
 
-    memset(&idt_entries, 0, sizeof(idt_entries));
+void test(){
+    printkc("SYSCALL", 0xc);
+}
+
+
+enum syscallTable
+{
+    SYS_OUT = 1,
+    SYS_IN,
+    SYS_MALLOC,
+    SYS_FREE
+};
+
+void check_syscall( registers_t registers)
+{  
+    printkc("SYSCALL\n", 0xd);
+    switch (registers.eax)
+    {
+        case SYS_OUT:
+            // sysOut(&registers);
+            break;
+
+        case SYS_IN:
+        {
+            u32int value = 11;
+            // uint32_t value = sysIn(&registers);
+            asm volatile("mov %0, %%eax" : : "m"(value));
+            break;
+        }
+
+        case SYS_MALLOC:
+        {
+            void* ptr = 32;
+            // void* ptr = sysMalloc(&registers); 
+            asm volatile("mov %0, %%eax" : : "m"(ptr));
+            break;
+        }
+
+        case SYS_FREE:
+            // sysFree(&registers);
+            break;
+
+        default:
+            // badSyscall(__func__);
+            break;
+    }
+}
+
+void noHandle(){
+    printk("Giii");
+}
+
+void idt_init() {
+    printk("Initialising IDT...\n");
+
+    idt_ptr.limit = sizeof(idt) - 1;
+    idt_ptr.base = (u32int) &idt;
+
+    memset(&idt, 0, sizeof(idt));
+
     idt_set_gate(0, (u32int)isr0, 0x08, 0x8E);
     idt_set_gate(1, (u32int)isr1, 0x08, 0x8E);
     idt_set_gate(2, (u32int)isr2, 0x08, 0x8E);
@@ -49,7 +105,6 @@ void init_idt() {
     idt_set_gate(30, (u32int)isr30, 0x08, 0x8E);
     idt_set_gate(31, (u32int)isr30, 0x08, 0x8E);
 
-   // Remap the PIC
     port_outb(0x20, 0x11);
     port_outb(0xA0, 0x11);
     port_outb(0x21, 0x20);
@@ -59,9 +114,9 @@ void init_idt() {
     port_outb(0x21, 0x01);
     port_outb(0xA1, 0x01);
     port_outb(0x21, 0x0);
-    port_outb(0xA1, 0x0); 
-
-    // Install the IRQs
+    port_outb(0xA1, 0x0);
+    
+    // kernel inturrupts
     idt_set_gate(32, (u32int)irq0, 0x08, 0x8E);
     idt_set_gate(33, (u32int)irq1, 0x08, 0x8E);
     idt_set_gate(34, (u32int)irq2, 0x08, 0x8E);
@@ -78,6 +133,11 @@ void init_idt() {
     idt_set_gate(45, (u32int)irq13, 0x08, 0x8E);
     idt_set_gate(46, (u32int)irq14, 0x08, 0x8E);
     idt_set_gate(47, (u32int)irq15, 0x08, 0x8E);
+    idt_set_gate(47, (u32int)irq15, 0x08, 0x8E );
+
+    // syscall
+    idt_set_gate(0x80, syscall_handle, 0x08, 0xEF);
+
     flush_idt();
 }
 
@@ -119,21 +179,22 @@ char *exception_messages[] = {
     "Reserved"
 };
 
-static void flush_idt() {
+
+
+
+void flush_idt() {
     /* Load the IDT */
     asm volatile ("lidt %0" : : "m" (idt_ptr));
 }
 
-static void idt_set_gate(u8int num, u32int base, u16int sel, u8int flags)
+void idt_set_gate(u8int num, u32int base, u16int sel, u8int flags)
 {
-   idt_entries[num].base_lo = base & 0xFFFF;
-   idt_entries[num].base_hi = (base >> 16) & 0xFFFF;
+   idt[num].base_lo = base & 0xFFFF;
+   idt[num].base_hi = (base >> 16) & 0xFFFF;
 
-   idt_entries[num].sel     = sel;
-   idt_entries[num].always0 = 0;
-   // We must uncomment the OR below when we get to using user-mode.
-   // It sets the interrupt gate's privilege level to 3.
-   idt_entries[num].flags   = flags /* | 0x60 */;
+   idt[num].sel     = sel;
+   idt[num].always0 = 0;
+   idt[num].flags   = flags;
 }
 
 void isr_handler(registers_t reg){
@@ -151,18 +212,15 @@ void register_interrupt_handler(u8int n, isr_t handler) {
     interrupt_handlers[n] = handler;
 }
 
-void irq_ack(u8int int_no){
-    if (int_no >= 40) port_outb(0xA0, 0x20); /* for slave */
-    port_outb(0x20, 0x20); /* for master */
-}
 
 void irq_handler(registers_t r) {
-    // if (r.int_no != 32) {
-    //     char a[5];
-    //     int_to_ascii(r.int_no, a);
-    //     printk("INT ");
-    //     printk(a);
-    //     printk("\n");        
+    // if (r.int_no == 80) {
+        // char a[5];
+        // int_to_ascii(r.int_no, a);
+        // printk("INT ");
+        // printk(a);
+        // printk("\n");
+        // while(1);     
     // }
 
     irq_ack(r.int_no);
@@ -172,3 +230,9 @@ void irq_handler(registers_t r) {
         handler(r);
     }
 }
+
+void irq_ack(u8int int_no){
+    if (int_no >= 40) port_outb(0xA0, 0x20); /* for slave */
+    port_outb(0x20, 0x20); /* for master */
+}
+

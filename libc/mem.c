@@ -1,4 +1,4 @@
-#include "libc/mem.h"
+#include "mem.h"
 
 void memset(u8int *dest, u8int val, u32int len){
     u8int *temp = (u8int *)dest;

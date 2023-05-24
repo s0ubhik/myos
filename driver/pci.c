@@ -1,5 +1,5 @@
 #include <driver/pci.h>
-#include "libc/string.h"
+#include <string.h>
 #include "driver/vga.h"
 #include "cpu/ports.h"
 

@@ -1,6 +1,6 @@
 #include <kernel/shell.h>
 #include <driver/keyboard.h>
-#include <libc/string.h>
+#include <string.h>
 #include "driver/pci.h"
 
 testok1(){

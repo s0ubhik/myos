@@ -4,7 +4,10 @@
 static void timer_callback(registers_t regs) {
 }
 
-void init_timer(u32int freq) {
+void timer_init(u32int freq) {
+	printk("Initializing Timer...\n");
+	asm volatile("sti");
+
 	register_interrupt_handler(IRQ0, timer_callback);
 
 	port_outb(0x43, 0x36);

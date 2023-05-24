@@ -46,7 +46,6 @@ irq_common_stub:
     add esp, 8
     sti
     iret 
-    
 
 global isr0
 global isr1
@@ -97,6 +96,7 @@ global irq12
 global irq13
 global irq14
 global irq15
+global irq16
 
 
 ; 0: Divide By Zero Exception
@@ -411,4 +411,11 @@ irq15:
     cli
     push byte 15
     push byte 47
+    jmp irq_common_stub
+
+
+irq16:
+    cli
+    push byte 50
+    push byte 48
     jmp irq_common_stub

@@ -7,6 +7,9 @@
 #include "driver/mouse.h"
 #include "driver/ata.h"
 #include "driver/pci.h"
+#include <functions.h>
+
+extern void start_user_mode();
 
 void kernel_main(unsigned long kernel_stack){
     clear_screen();
@@ -15,37 +18,31 @@ void kernel_main(unsigned long kernel_stack){
     print_hex(&kernel_stack+1, 7);
     printk("\n");
 
-    printk("Hello World\n");
+    gdt_init();
+    idt_init();
+    timer_init(0);
 
-    printk("Loading GDT...\n");
-    init_gdt();
-
-    printk("Loading IDT...\n");
-    init_idt();
-
-    printk("Intialising Timer...\n");
-    asm volatile("sti");
-    init_timer(0);
-
-    printk("Intialising Keyboard...\n");
+    printk("Initialising PS2 Keyboard...\n");
     init_keyboard();
 
-    printk("Intialising Mouse...\n");
+    printk("Initialising PS2 Mouse...\n");
     init_mouse();
 
-    printk("Intialising ATA...\n");
+    printk("Initialising ATA...\n");
     init_ata();
 
-    printk("Intialising PCI...\n");
+    printk("Initialising PCI...\n");
     init_pci();
-    
-    u8int shell_exit = start_shell();
-    printk("Shell Exited with code ");
-    char code[3];
-    int_to_ascii(shell_exit, code);
-    printk(code);
-    printk("\n");
 
-    printk("Halt");
+    // u8int shell_exit = start_shell();
+    // printk("Shell Exited with code ");
+    // char code[3];
+    // int_to_ascii(shell_exit, code);
+    // printk(code);
+    // printk("\n");
+
+    // printk("Halt");
+    start_user_mode();
+
     while(1);
 }

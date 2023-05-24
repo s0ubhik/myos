@@ -1,2 +1,2 @@
-#include "libc/functions.h"
+#include "functions.h"
 
