@@ -1,7 +1,7 @@
-TOOLCHAIN = x86_64-linux-gnu
-CC = $(TOOLCHAIN)-gcc
-LD = $(TOOLCHAIN)-ld
-AS = $(TOOLCHAIN)-as
+# TOOLCHAIN = x86_64-linux-gnu
+# CC = $(TOOLCHAIN)-gcc
+# LD = $(TOOLCHAIN)-ld
+# AS = $(TOOLCHAIN)-as
 NASM = nasm
 
 CCPARAMS = -m32 -ffreestanding -Iinclude/ -Ilibc -w
@@ -63,7 +63,7 @@ run-vm: clean $(out)
 	@rm -rf boot/*.o kernel/*.o driver/*.o cpu/*.o libc/*.o mem/*.o
 
 run-qemu: $(out)
-	@qemu-system-i386 -kernel $(bin)
+	@qemu-system-i386 -kernel $(kernel)
 
 clean:
 	@rm -rf build boot/*.o kernel/*.o driver/*.o cpu/*.o libc/*.o mem/*.o
