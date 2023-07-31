@@ -34,7 +34,7 @@ void kernel_main(unsigned long kernel_stack){
     printk("Initialising PCI...\n");
     init_pci();
 
-    // u8int shell_exit = start_shell();
+    u8int shell_exit = start_shell();
     // printk("Shell Exited with code ");
     // char code[3];
     // int_to_ascii(shell_exit, code);
@@ -42,7 +42,7 @@ void kernel_main(unsigned long kernel_stack){
     // printk("\n");
 
     // printk("Halt");
-    start_user_mode();
+    // start_user_mode();
 
     while(1);
 }

@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "tss.h": "c",
-        "task.h": "c",
-        "idt.h": "c",
-        "string.h": "c",
-        "type_traits": "c"
-    }
-}

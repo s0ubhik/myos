@@ -25,11 +25,11 @@ ata_dev ata_detect(u16int base, u8int master, char* dev_name){
     dev.ready = 0;
 
     u8int status;
-    printk("ATA name=");
+    printk("ATA ");
     printk(dev_name);
     printk(" ");
     printk(master ? "MASTER" : "SLAVE");
-    printk(": ");
+    printk(" ");
 
     port_outb(dev.base+6, master ? 0xA0 : 0xB0);
     port_outb(dev.base+0x206, 0);
@@ -59,7 +59,7 @@ ata_dev ata_detect(u16int base, u8int master, char* dev_name){
     
     status = port_inb(dev.base+7);
     if(status & 0x01) { 
-        printk("ERROR\n");
+        printkc("[ERROR]\n", 0x0c);
         return dev;
     }
 
@@ -68,7 +68,7 @@ ata_dev ata_detect(u16int base, u8int master, char* dev_name){
         port_inw(dev.base+7);
         
     dev.ready = 1;
-    printk("READY\n");
+    printkc("[READY]\n", 0x0a);
     return dev;
 }
 
@@ -172,7 +172,7 @@ void init_ata(){
     u8int read[15];
     read[14] = '\0';
     printk("READ: ");
-    ata_read(slave, 5, read, 14);
+    ata_read(slave, 0, read, 14);
     printk(read);
 
     printk("\n");

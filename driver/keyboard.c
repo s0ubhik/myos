@@ -9,6 +9,7 @@
 char inp[256];
 u8int i; // cursor index
 key_code c; // current key
+extern int keylock;
 
 //Global scancode table
 static int _scancode_std [] = {
@@ -106,13 +107,23 @@ static int _scancode_std [] = {
 };
 
 static void empty_keyboard_hook(key_code key){}
-
+extern void pop_func();
 keyboard_hook_t keyboard_hook = empty_keyboard_hook;
 
 static void keyboard_callback(registers_t regs){
 	u8int scan_code = port_inb(0x60);
 	if (scan_code > SC_MAX) return;
 	keyboard_hook(_scancode_std[scan_code]);
+}
+
+
+void process_keyboard_hook(key_code key){
+    c = key;
+	keylock = 1;
+	printk("KEYLOCK: ");
+    if (keylock) printk("A");
+	else printk("B");
+	printk("\n");
 }
 
 void generic_keyboard_hook(key_code key){

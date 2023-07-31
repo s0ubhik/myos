@@ -7,11 +7,10 @@ section .text
 extern kernel_main
 global loader
 global kernel_stack
+global pop_func
 global start_user_mode
 global tss_kernel_stack
 tss_kernel_stack dd kernel_stack
-
-
 
 loader:
     mov esp, kernel_stack
@@ -49,7 +48,11 @@ user_code:
     int 0x80
     int 0x80
     jmp $
-
+pop_func:
+	pop eax
+	pop eax
+	pop eax
+	ret
 jmp $
 
 section .bss
